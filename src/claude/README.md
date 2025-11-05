@@ -8,7 +8,7 @@ Installs [Claude Code](https://claude.ai/code), Anthropic's official CLI for Cla
 
 ```json
 "features": {
-    "ghcr.io/your-username/features/claude:1": {}
+    "ghcr.io/ast5005/features/claude:1": {}
 }
 ```
 
@@ -16,7 +16,7 @@ Installs [Claude Code](https://claude.ai/code), Anthropic's official CLI for Cla
 
 ```json
 "features": {
-    "ghcr.io/your-username/features/claude:1": {
+    "ghcr.io/ast5005/features/claude:1": {
         "version": "1.0.58"
     }
 }
@@ -26,7 +26,7 @@ Installs [Claude Code](https://claude.ai/code), Anthropic's official CLI for Cla
 
 ```json
 "features": {
-    "ghcr.io/your-username/features/claude:1": {
+    "ghcr.io/ast5005/features/claude:1": {
         "osType": "macos",
         "version": "latest"
     }
