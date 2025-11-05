@@ -1,0 +1,31 @@
+{
+  "id": "claude",
+  "version": "1.0.0",
+  "name": "Claude Code",
+  "description": "Installs Claude Code CLI with automatic OS detection",
+  "documentationURL": "https://github.com/ast5005/features/tree/main/src/claude",
+  "options": {
+    "version": {
+      "type": "string",
+      "proposals": [
+        "latest",
+        "1.0.58"
+      ],
+      "default": "latest",
+      "description": "Version of Claude Code to install"
+    },
+    "osType": {
+      "type": "string",
+      "enum": [
+        "linux",
+        "macos",
+        "wsl"
+      ],
+      "default": "linux",
+      "description": "Operating system type (defaults to linux if not set)"
+    }
+  },
+  "installsAfter": [
+    "ghcr.io/devcontainers/features/common-utils"
+  ]
+}
