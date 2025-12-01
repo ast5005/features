@@ -17,12 +17,10 @@
     "osType": {
       "type": "string",
       "enum": [
-        "linux",
-        "macos",
-        "wsl"
+        "linux"
       ],
       "default": "linux",
-      "description": "Operating system type (defaults to linux if not set)"
+      "description": "Operating system type (only linux is supported)"
     }
   },
   "installsAfter": [

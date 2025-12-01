@@ -22,7 +22,7 @@ install_claude() {
     echo "Installing Claude Code for OS: $OS_TYPE"
 
     case "$OS_TYPE" in
-        linux|macos|wsl)
+        linux)
             # Check for required dependencies
             if ! command_exists curl; then
                 echo "Error: curl is required but not installed."
@@ -30,37 +30,65 @@ install_claude() {
                 exit 1
             fi
 
-            # Try Homebrew first if available
-            if command_exists brew; then
-                echo "Installing Claude Code via Homebrew..."
-                brew install --cask claude-code || echo "Homebrew installation failed, falling back to install script..."
-            fi
+            # Install via shell script
+            echo "Installing Claude Code via install script..."
 
-            # Fallback to shell script installation
-            if ! command_exists claude; then
-                echo "Installing Claude Code via install script..."
-
-                if [ "$VERSION" = "latest" ] || [ -z "$VERSION" ]; then
-                    echo "Installing latest version of Claude Code..."
-                    curl -fsSL https://claude.ai/install.sh | bash
-                else
-                    echo "Installing Claude Code version $VERSION..."
-                    curl -fsSL https://claude.ai/install.sh | bash -s "$VERSION"
-                fi
+            if [ "$VERSION" = "latest" ] || [ -z "$VERSION" ]; then
+                echo "Installing latest version of Claude Code..."
+                curl -fsSL https://claude.ai/install.sh | bash
+            else
+                echo "Installing Claude Code version $VERSION..."
+                curl -fsSL https://claude.ai/install.sh | bash -s "$VERSION"
             fi
-            ;;
-        windows)
-            echo "Error: Windows installation in devcontainer is not typical."
-            echo "For Windows containers, use one of the following:"
-            echo "  PowerShell: irm https://claude.ai/install.ps1 | iex"
-            echo "  Command Prompt: curl -fsSL https://claude.ai/install.cmd -o install.cmd && install.cmd && del install.cmd"
-            exit 1
             ;;
         *)
-            echo "Warning: Unknown OS type '$OS_TYPE', defaulting to linux installation method..."
-            curl -fsSL https://claude.ai/install.sh | bash
+            echo "Error: Unsupported OS type '$OS_TYPE'."
+            echo "Only 'linux' is supported."
+            exit 1
             ;;
     esac
+}
+
+# Make Claude binary accessible to all users
+make_globally_accessible() {
+    echo "Making Claude binary accessible to all users..."
+
+    # Common locations where Claude might be installed
+    POSSIBLE_LOCATIONS=(
+        "/root/.local/bin/claude"
+        "/usr/local/bin/claude"
+        "$HOME/.local/bin/claude"
+    )
+
+    CLAUDE_BINARY=""
+    for location in "${POSSIBLE_LOCATIONS[@]}"; do
+        if [ -f "$location" ]; then
+            CLAUDE_BINARY="$location"
+            echo "Found Claude binary at: $CLAUDE_BINARY"
+            break
+        fi
+    done
+
+    # If not found in common locations, try to find it
+    if [ -z "$CLAUDE_BINARY" ] && command_exists claude; then
+        CLAUDE_BINARY=$(which claude)
+        echo "Found Claude binary at: $CLAUDE_BINARY"
+    fi
+
+    if [ -n "$CLAUDE_BINARY" ]; then
+        # If it's not already in /usr/local/bin, copy it there
+        if [ "$CLAUDE_BINARY" != "/usr/local/bin/claude" ]; then
+            echo "Copying Claude binary to /usr/local/bin for global access..."
+            cp "$CLAUDE_BINARY" /usr/local/bin/claude
+            CLAUDE_BINARY="/usr/local/bin/claude"
+        fi
+
+        # Make it executable by all users
+        chmod 755 "$CLAUDE_BINARY"
+        echo "✓ Claude binary is now accessible to all users at $CLAUDE_BINARY"
+    else
+        echo "⚠ Warning: Could not locate Claude binary to make globally accessible"
+    fi
 }
 
 # Verify installation
@@ -86,6 +114,7 @@ main() {
     echo "================================================"
 
     install_claude
+    make_globally_accessible
     verify_installation
 
     echo "================================================"
