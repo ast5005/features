@@ -1,6 +1,6 @@
 {
   "id": "claude",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "name": "Claude Code",
   "description": "Installs Claude Code CLI with automatic OS detection",
   "documentationURL": "https://github.com/ast5005/features/tree/main/src/claude",
