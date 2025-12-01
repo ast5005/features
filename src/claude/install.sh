@@ -56,7 +56,6 @@ make_globally_accessible() {
     # Common locations where Claude might be installed
     POSSIBLE_LOCATIONS=(
         "/root/.local/bin/claude"
-        "/usr/local/bin/claude"
         "$HOME/.local/bin/claude"
     )
 
@@ -76,16 +75,23 @@ make_globally_accessible() {
     fi
 
     if [ -n "$CLAUDE_BINARY" ]; then
-        # If it's not already in /usr/local/bin, copy it there
+        # If it's not already in /usr/local/bin, create a symlink
         if [ "$CLAUDE_BINARY" != "/usr/local/bin/claude" ]; then
-            echo "Copying Claude binary to /usr/local/bin for global access..."
-            cp "$CLAUDE_BINARY" /usr/local/bin/claude
-            CLAUDE_BINARY="/usr/local/bin/claude"
+            echo "Creating symlink in /usr/local/bin for global access..."
+
+            # Remove existing symlink or file if it exists
+            if [ -L "/usr/local/bin/claude" ] || [ -f "/usr/local/bin/claude" ]; then
+                rm -f /usr/local/bin/claude
+            fi
+
+            # Create symlink
+            ln -s "$CLAUDE_BINARY" /usr/local/bin/claude
+            echo "✓ Created symlink: /usr/local/bin/claude -> $CLAUDE_BINARY"
         fi
 
-        # Make it executable by all users
+        # Make the original binary executable by all users
         chmod 755 "$CLAUDE_BINARY"
-        echo "✓ Claude binary is now accessible to all users at $CLAUDE_BINARY"
+        echo "✓ Claude binary is now accessible to all users"
     else
         echo "⚠ Warning: Could not locate Claude binary to make globally accessible"
     fi
